@@ -7,23 +7,17 @@ class RSA {
     private static final int PRIME_SIZE = 64;
 	private static BigInteger prime1;
 	private static BigInteger prime2;
+	private static BigInteger modulus;
 	private static BigInteger totient;
 	private static BigInteger publicKey;
 	private static BigInteger privateKey;
 	private static Random rnd = new Random();
-
+	private static String message;
 
 
     //*************************************************************************
     // Main
     public static void main(String[] args) throws IOException {
-        BigInteger d = e.modInverse(totient);
-        System.out.println("d: "+d);
-        System.out.println();
-        //n = new BigInteger("3217685205209121519351740253776369787387967512724035581690489949286693931765120992537584931899783756819701528805256046408628175175581616761513285402095463");
-        //e = BigInteger.valueOf(55807);
-        //d = new BigInteger("2200839714875147875986440361010228307459388749228397193698061029158033832125037067805443949857585924543789309726019044594351746181364535604703468726308807");
-        int c = 1966733;
         System.out.println("c: "+c);
         BigInteger ec = BigInteger.valueOf(c).modPow(e, n);
         System.out.println("encryted: "+ec);
@@ -33,14 +27,20 @@ class RSA {
 	public void generateKeys()
 	{
 		generatePrime12();
+		generateModulus();
 		generateTotient();
 		generatePublicKey();
 		generatePrivateKey();
+		printKeys();
 	}
 	static void generatePrime12()
 	{
 		prime1 = BigInteger.probablePrime(PRIME_SIZE,rnd);
 		prime2 = BigInteger.probablePrime(PRIME_SIZE,rnd);
+	}
+	static void generateModulus()
+	{
+		modulus = prime1.multiply(prime2);
 	}
 	static void generateTotient()
 	{
@@ -60,5 +60,20 @@ class RSA {
 	static void generatePrivateKey()
 	{
 		privateKey = publicKey.modInverse(totient);
+	}
+	static void printKeys()
+	{
+
+	}
+	static BigInteger encryptMessage(String message)
+	{
+		byte[] byteMessage = message.getBytes();
+		BigInteger bigMessage = new BigInteger(byteMessage);
+		BigInteger encrypted = BigInteger.valueOf(bigMessage).modPow(privateKey, modulus);
+		return encrypted;
+	}
+	static void decryptSequence()
+	{
+
 	}
 }
