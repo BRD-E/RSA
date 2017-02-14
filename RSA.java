@@ -3,7 +3,7 @@ import java.util.Random;
 import java.util.Arrays;
 import java.io.*;
 
-class RSA {
+class RSA{
     private static final int PRIME_SIZE = 64;
 	private static BigInteger prime1;
 	private static BigInteger prime2;
@@ -18,13 +18,9 @@ class RSA {
     //*************************************************************************
     // Main
     public static void main(String[] args) throws IOException {
-        System.out.println("c: "+c);
-        BigInteger ec = BigInteger.valueOf(c).modPow(e, n);
-        System.out.println("encryted: "+ec);
-        BigInteger m = ec.modPow(d, n);
-        System.out.println("decrypted: "+m.intValue());
+        generateKeys();
     }
-	public void generateKeys()
+	static void generateKeys()
 	{
 		generatePrime12();
 		generateModulus();
@@ -32,6 +28,7 @@ class RSA {
 		generatePublicKey();
 		generatePrivateKey();
 		printKeys();
+		decryptMessage(encryptMessage("test"));
 	}
 	static void generatePrime12()
 	{
@@ -63,17 +60,23 @@ class RSA {
 	}
 	static void printKeys()
 	{
-
+		System.out.println("Modulus: " + modulus.toString());
+		System.out.println("publicKey: " + publicKey.toString());
+		System.out.println("privateKey: " + privateKey.toString());
 	}
 	static BigInteger encryptMessage(String message)
 	{
 		byte[] byteMessage = message.getBytes();
 		BigInteger bigMessage = new BigInteger(byteMessage);
-		BigInteger encrypted = BigInteger.valueOf(bigMessage).modPow(privateKey, modulus);
+		BigInteger encrypted = bigMessage.modPow(privateKey, modulus);
 		return encrypted;
 	}
-	static void decryptSequence()
+	static void decryptMessage(BigInteger encrypted)
 	{
 
+		BigInteger bigdecrypt = encrypted.modPow(privateKey, modulus);
+		byte[] bytedecrypt = bigdecrypt.toByteArray();
+		String decrypted = bytedecrypt.toString();
+		System.out.println("decrypted: " + decrypted);
 	}
 }
