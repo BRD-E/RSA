@@ -5,13 +5,13 @@ import java.io.*;
 
 class RSA{
     private static final int PRIME_SIZE = 64;
-	private static BigInteger prime1;
-	private static BigInteger prime2;
-	private static BigInteger modulus;
-	private static BigInteger totient;
+	private static BigInteger prime1; // Q
+	private static BigInteger prime2; // P
+	private static BigInteger modulus; // N
+	private static BigInteger totient; // Lambda
 	private static int fixedPublicKey = 65537;
-	private static BigInteger publicKey = BigInteger.valueOf(fixedPublicKey);
-	private static BigInteger privateKey;
+	private static BigInteger publicKey = BigInteger.valueOf(fixedPublicKey); // E
+	private static BigInteger privateKey; // D
 	private static Random rand = new Random();
 	private static String message;
 
@@ -34,12 +34,14 @@ class RSA{
 
 	static void generatePrime12()
 	{
+		// generates 2 prime numbers P and Q
 		prime1 = BigInteger.probablePrime(PRIME_SIZE,rand);
 		prime2 = BigInteger.probablePrime(PRIME_SIZE,rand);
 	}
 
 	static void generateModulus()
 	{
+		// Calculates the N value, aka modulus
 		modulus = prime1.multiply(prime2);
 	}
 
@@ -55,7 +57,8 @@ class RSA{
 
 	static void generatePublicKey()
 	{
-		publicKey = publicKey.subtract(BigInteger.ONE); // This will make the fixedPublicKey the publicKey if possible. if not it will find a new value.
+		// Subtract one so it will use the fixedPublicKey as default, assuming it meets the requirements
+		publicKey = publicKey.subtract(BigInteger.ONE);
         while(true)
 		{
             publicKey = publicKey.add(BigInteger.ONE);
@@ -93,6 +96,7 @@ class RSA{
 		return decryptedMessage;
 	}
 
+	// The methods below are just for encrypting / decrypting text, not needed for lab.
 	static BigInteger toBigInteger(String message)
 	{
 		byte[] byteString = message.getBytes();
@@ -101,7 +105,6 @@ class RSA{
 
 	static String toText(BigInteger text)
 	{
-		System.out.println(text.toString());
 		byte[] byteArray = text.toByteArray();
 		return new String(byteArray);
 	}
