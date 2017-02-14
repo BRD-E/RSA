@@ -28,12 +28,14 @@ class RSA{
 		generatePublicKey();
 		generatePrivateKey();
 		printKeys();
-		decryptMessage(encryptMessage("test"));
+		decryptMessage(encryptMessage(BigInteger.valueOf(2048)));
 	}
 	static void generatePrime12()
 	{
-		prime1 = BigInteger.probablePrime(PRIME_SIZE,rnd);
-		prime2 = BigInteger.probablePrime(PRIME_SIZE,rnd);
+		//prime1 = BigInteger.probablePrime(PRIME_SIZE,rnd);
+		//prime2 = BigInteger.probablePrime(PRIME_SIZE,rnd);
+		prime1 = BigInteger.valueOf(61);
+		prime2 = BigInteger.valueOf(53);
 	}
 	static void generateModulus()
 	{
@@ -41,16 +43,25 @@ class RSA{
 	}
 	static void generateTotient()
 	{
-		totient = prime1.subtract(BigInteger.valueOf(1)).multiply(prime2.subtract(BigInteger.valueOf(1)));
+		// |(p-1) * (q-1) | / gcd((p-1), (q-1))
+		BigInteger prime1Minus1 = prime1.subtract(BigInteger.ONE);
+		BigInteger prime2Minus1 = prime2.subtract(BigInteger.ONE);
+		BigInteger multiplied = prime1Minus1.multiply(prime2Minus1);
+		BigInteger gcd = prime1Minus1.gcd(prime2Minus1);
+		totient = multiplied.divide(gcd);
 	}
 	static void generatePublicKey()
 	{
+		publicKey = BigInteger.valueOf(16);
         while(true)
 		{
-            publicKey = BigInteger.probablePrime(16,rnd).mod(totient);
-            if (totient.mod(publicKey) != BigInteger.valueOf(0))
+            publicKey = publicKey.add(BigInteger.ONE);
+			if (publicKey.isProbablePrime(100))
 			{
-				break;
+				if (totient.mod(publicKey) != BigInteger.valueOf(0))
+				{
+					break;
+				}
 			}
         }
 	}
@@ -63,20 +74,17 @@ class RSA{
 		System.out.println("Modulus: " + modulus.toString());
 		System.out.println("publicKey: " + publicKey.toString());
 		System.out.println("privateKey: " + privateKey.toString());
+		System.out.println("totient: " + totient.toString());
 	}
-	static BigInteger encryptMessage(String message)
+	static BigInteger encryptMessage(BigInteger message)
 	{
-		byte[] byteMessage = message.getBytes();
-		BigInteger bigMessage = new BigInteger(byteMessage);
-		BigInteger encrypted = bigMessage.modPow(privateKey, modulus);
+		BigInteger encrypted = message.modPow(publicKey, modulus);
+		System.out.println("encrypted: " + encrypted.toString());
 		return encrypted;
 	}
-	static void decryptMessage(BigInteger encrypted)
+	static void decryptMessage(BigInteger message)
 	{
-
-		BigInteger bigdecrypt = encrypted.modPow(privateKey, modulus);
-		byte[] bytedecrypt = bigdecrypt.toByteArray();
-		String decrypted = bytedecrypt.toString();
-		System.out.println("decrypted: " + decrypted);
+		BigInteger decrypted = message.modPow(privateKey, modulus);
+		System.out.println("decrypted: " + decrypted.toString());
 	}
 }
